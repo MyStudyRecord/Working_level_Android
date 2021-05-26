@@ -6,22 +6,18 @@ import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
 import com.what.working_level_android.R
 
 class MainActivity : AppCompatActivity() {
 
-    private val questionBank = listOf(
-        Question(R.string.question_australia, true),
-        Question(R.string.question_oceans, true),
-        Question(R.string.question_mideast, false),
-        Question(R.string.question_africa, false),
-        Question(R.string.question_americas, true),
-        Question(R.string.question_asia, true)
-
-    )
-    private var currentIndex = 0
 
     lateinit var questionTextView: TextView
+
+    // 최초로 quizViewModel이 사용될 때까지 초기화를 늦춤
+    private val quizViewModel: QuizViewModel by lazy {
+        ViewModelProvider(this).get(QuizViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         questionTextView = findViewById<TextView>(R.id.question_text_view)
         val previousButton = findViewById<Button>(R.id.previous_button)
 
-        Log.d("로그", "현재 : $currentIndex")
+
         trueButton.setOnClickListener {
             checkAnswer(true)
         }
@@ -51,7 +47,7 @@ class MainActivity : AppCompatActivity() {
 
         }
         previousButton.setOnClickListener {
-            if (currentIndex <= 0) {
+            if (quizViewModel.currentIndex <= 0) {
                 Toast.makeText(this, "더이상 뒤로 갈수 없습니다", Toast.LENGTH_SHORT).show()
             } else {
                 previousQuestion()
@@ -61,23 +57,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun nextQuestion() {
-        currentIndex = (currentIndex + 1) % questionBank.size
+        quizViewModel.moveToNext()
         updateQuestion()
     }
 
     private fun previousQuestion() {
-        currentIndex = (currentIndex - 1)
+        quizViewModel.moveToPrevious()
         updateQuestion()
     }
 
     private fun updateQuestion() {
-        val questionTextResId = questionBank[currentIndex].textResId
+        val questionTextResId = quizViewModel.currentQuestionText
         questionTextView.setText(questionTextResId)
 
     }
 
     private fun checkAnswer(userAnswer: Boolean) {
-        val correctAnswer = questionBank[currentIndex].answer
+        val correctAnswer = quizViewModel.currentQuestionAnswer
 
         val messageResId = if (userAnswer == correctAnswer) {
             R.string.correct_toast
