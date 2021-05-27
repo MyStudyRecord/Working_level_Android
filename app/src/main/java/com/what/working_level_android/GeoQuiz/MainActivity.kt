@@ -2,6 +2,7 @@ package com.what.working_level_android.GeoQuiz
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
@@ -14,9 +15,18 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var questionTextView: TextView
 
+    private val KEY_INDEX = "index"
     // 최초로 quizViewModel이 사용될 때까지 초기화를 늦춤
     private val quizViewModel: QuizViewModel by lazy {
         ViewModelProvider(this).get(QuizViewModel::class.java)
+    }
+
+
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Log.d("로그","onSvaeInstanceState")
+        outState.putInt(KEY_INDEX,quizViewModel.currentIndex)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,7 +38,8 @@ class MainActivity : AppCompatActivity() {
         questionTextView = findViewById<TextView>(R.id.question_text_view)
         val previousButton = findViewById<Button>(R.id.previous_button)
 
-
+        val currentIndex = savedInstanceState?.getInt(KEY_INDEX,0) ?:0
+        quizViewModel.currentIndex = currentIndex
         trueButton.setOnClickListener {
             checkAnswer(true)
         }
