@@ -9,6 +9,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.what.working_level_android.R
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
 
@@ -78,6 +79,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateQuestion() {
+        Log.d("로그","Updating question text",Exception())
         val questionTextResId = quizViewModel.currentQuestionText
         questionTextView.setText(questionTextResId)
 
